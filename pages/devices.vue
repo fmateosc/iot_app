@@ -37,13 +37,21 @@
           <el-table-column label="Actions">
             <div slot-scope="{ row, $index }">
               <el-tooltip content="Database Saver">
-                  <base-switch 
-                    @click="updateSaverRuleStatus($index)" :value="row.saverRule" 
-                    type="primary" 
-                    style="margin-top: 10px"
-                    on-text="On" 
-                    off-text="Off">
-                  </base-switch>
+                <i 
+                  class="fas fa-database " 
+                  :class="{'text-success' : row.saverRule, 'text-dark' : !row.saverRule}"
+                  style="margin-right: 5px">                 
+                </i>    
+              </el-tooltip>
+                
+              <el-tooltip content="Saver Status Indicator">
+                <base-switch 
+                  @click="updateSaverRuleStatus($index)" :value="row.saverRule" 
+                  type="primary" 
+                  style="margin-top: 10px"
+                  on-text="On" 
+                  off-text="Off">
+                </base-switch>
               </el-tooltip>
 
               <el-tooltip
@@ -181,6 +189,8 @@
       <!-- /.modal-dialog -->
     </div>
     <!--Fin del modal-->
+
+    <Json :value="devices"></Json>
   </div>
 </template>
 

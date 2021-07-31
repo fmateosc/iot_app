@@ -9,7 +9,7 @@ import User from "../models/user.js";
 //POST -> req.body
 //GET -> req.query
 
-//AUTH
+//LOGIN
 router.post("/login", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -49,6 +49,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
+//REGISTER
 router.post("/register", async (req, res) => {
   try {
     const name = req.body.name;

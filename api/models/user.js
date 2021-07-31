@@ -18,3 +18,4 @@ userSchema.plugin(uniqueValidator, { message: 'Error, email already exists.'});
 const User = mongoose.model('User', userSchema);
 
 export default User;
+

@@ -1,22 +1,79 @@
 <template>
   <div>
+    <!-- FORM ADD DEVICE -->
+    <div class="row">
+      <card>
+        <div slot="header">
+          <h4 class="card-title">Add new Device</h4>
+        </div>
+
+        <div class="row">
+          <div class="col-4">
+            <base-input
+              label="Device Name"
+              type="text"
+              placeholder="Ex: Home, Office..."
+            >
+            </base-input>
+          </div>
+
+          <div class="col-4">
+            <base-input
+              label="Device Id"
+              type="text"
+              placeholder="Ex: 7777-8888"
+            >
+            </base-input>
+          </div>
+
+          <div class="col-4">
+            <slot name="label">
+              <label> Template </label>
+            </slot>
+
+            <el-select
+              value="1"
+              placeholder="Select Template"
+              class="select-primary"
+              style="width:100%"
+            >
+              <el-option
+                class="text-dark"
+                value="Template 1"
+                label="Template 1"
+              ></el-option>
+
+              <el-option
+                class="text-dark"
+                value="Template 2"
+                label="Template 2"
+              ></el-option>
+
+              <el-option
+                class="text-dark"
+                value="Template 3"
+                label="Template 3"
+              ></el-option>
+            </el-select>
+          </div>
+        </div>
+
+        <div class="row pull-right">
+          <div class="col-12">
+            <base-button type="primary" class="mb-3" size="lg">Add</base-button>
+          </div>
+        </div>
+      </card>
+    </div>
+
     <!-- DEVICES TABLE -->
     <div class="row">
       <card>
         <div slot="header">
-          Devices
-
-          <base-button
-            type="primary"
-            class="btn btn-secondary"
-            style="float: right;"
-            @click="abrirModal('device', 'registrar')"
-          >
-            <i class="fas fa-plus"></i>&nbsp;Add
-          </base-button>
+          <h4 class="card-title">Devices</h4>
         </div>
 
-        <el-table :data="devices">
+        <el-table :data="$store.state.devices">
           <el-table-column label="#" min-width="50" align="center">
             <div slot-scope="{ row, $index }">
               {{ $index + 1 }}
@@ -27,8 +84,6 @@
 
           <el-table-column prop="dId" label="Device Id"></el-table-column>
 
-          <el-table-column prop="dType" label="Device type"></el-table-column>
-
           <el-table-column
             prop="templateName"
             label="Template"
@@ -36,22 +91,27 @@
 
           <el-table-column label="Actions">
             <div slot-scope="{ row, $index }">
-              <el-tooltip content="Database Saver">
-                <i 
-                  class="fas fa-database " 
-                  :class="{'text-success' : row.saverRule, 'text-dark' : !row.saverRule}"
-                  style="margin-right: 5px">                 
-                </i>    
+              <el-tooltip
+                content="Saver Status Indicator"
+                style="margin-right:10px"
+              >
+                <i
+                  class="fas fa-database "
+                  :class="{
+                    'text-success': row.saverRule,
+                    'text-dark': !row.saverRule
+                  }"
+                ></i>
               </el-tooltip>
-                
-              <el-tooltip content="Saver Status Indicator">
-                <base-switch 
-                  @click="updateSaverRuleStatus($index)" :value="row.saverRule" 
-                  type="primary" 
-                  style="margin-top: 10px"
-                  on-text="On" 
-                  off-text="Off">
-                </base-switch>
+
+              <el-tooltip content="Database Saver">
+                <base-switch
+                  @click="updateSaverRuleStatus($index)"
+                  :value="row.saverRule"
+                  type="primary"
+                  on-text="On"
+                  off-text="Off"
+                ></base-switch>
               </el-tooltip>
 
               <el-tooltip
@@ -67,7 +127,7 @@
                   class="btn-link"
                   @click="deleteDevice(row)"
                 >
-                  <i class="fas fa-trash"></i>
+                  <i class="tim-icons icon-simple-remove "></i>
                 </base-button>
               </el-tooltip>
             </div>
@@ -76,121 +136,7 @@
       </card>
     </div>
 
-    <!--Inicio del modal agregar/actualizar-->
-    <div
-      class="modal fade"
-      tabindex="-1"
-      :class="{ mostrar: modal }"
-      role="dialog"
-      aria-labelledby="myModalLabel"
-      style="display: none;"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-primary modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title" v-text="tituloModal"></h4>
-            <button
-              type="button"
-              class="close"
-              @click="cerrarModal()"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <hr>
-            <div class="form-group row">
-              <label class="col-md-3 form-control-label" for="text-input"
-                >Device name</label
-              >
-              <div class="col-md-9">
-                <input
-                  type="text"
-                  style="color:black"
-                  class="form-control"
-                  placeholder="Ex: Home, Office..."
-                />
-              </div>
-            </div>
-
-            <div class="form-group row">
-              <label class="col-md-3 form-control-label" for="text-input"
-                >Device id</label
-              >
-              <div class="col-md-9">
-                <input
-                  type="text"
-                  style="color:black"
-                  class="form-control"
-                  placeholder="Ex: 7777-8888"
-                />
-              </div>
-            </div>
-            <div class="form-group row">
-              <label class="col-md-3 form-control-label" for="text-input"
-                >Device type</label
-              >
-              <div class="col-md-9">
-                <input
-                  type="text"
-                  style="color:black"
-                  class="form-control"
-                  placeholder="Ex: ESP32"
-                />
-              </div>
-            </div>
-
-            <div class="form-group row">
-              <label class="col-md-3 form-control-label" for="text-input"
-                >Template</label
-              >
-              <div class="col-md-9">
-                <select 
-                  class="form-control" 
-                  style="color:black">
-                  <option>Template 1</option>
-                  <option>Template 2</option>
-                  <option>Template 3</option>
-                  <option>Template 4</option>
-                  <option>Template 5</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <base-button
-              type="button"
-              class="btn btn-secondary"
-              @click="cerrarModal()"
-            >
-              Close
-            </base-button>
-            <base-button
-              type="button"
-              v-if="tipoAccion == 1"
-              class="btn btn-primary"
-            >
-              Save
-            </base-button>
-
-            <base-button
-              type="button"
-              v-if="tipoAccion == 2"
-              class="btn btn-primary"
-            >
-              Update
-            </base-button>
-          </div>
-        </div>
-        <!-- /.modal-content -->
-      </div>
-      <!-- /.modal-dialog -->
-    </div>
-    <!--Fin del modal-->
-
-    <Json :value="devices"></Json>
+    <Json :value="$store.state.devices"></Json>
   </div>
 </template>
 
@@ -198,6 +144,7 @@
 import { Table, TableColumn } from "element-ui";
 import { Select, Option } from "element-ui";
 export default {
+  middleware: "authenticated",
   components: {
     [Table.name]: Table,
     [TableColumn.name]: TableColumn,
@@ -205,89 +152,47 @@ export default {
     [Select.name]: Select
   },
   data() {
-    return {
-      modal: 0,
-      tituloModal: "",
-      tipoAccion: 0,
-      devices: [
-        {
-          name: "Home",
-          dId: "8888",
-          dType: "ESP 32",
-          templateName: "Power Sensor",
-          templateId: "984237562348756ldksjfh",
-          saverRule: false
-        },
-        {
-          name: "Office",
-          dId: "1111",
-          dType: "ESP 32",
-          templateName: "Power Sensor",
-          templateId: "984237562348756ldksjfh",
-          saverRule: true
-        },
-        {
-          name: "Farm",
-          dId: "99999",
-          dType: "ESP 32",
-          templateName: "Power Sensor",
-          templateId: "984237562348756ldksjfh",
-          saverRule: false
-        }
-      ]
-    };
+    return {};
+  },
+  mounted() {
+    this.$store.dispatch("getDevices");
   },
   methods: {
     deleteDevice(device) {
-      alert("DELETING " + device.name);
-    },
-    updateSaverRuleStatus(index){
-      console.log(index)
-      this.devices[index].saverRule = !this.devices[index].saverRule;
-    },
-    abrirModal(modelo, accion, data = []) {
-      switch (modelo) {
-        case "device": {
-          switch (accion) {
-            case "registrar": {
-              this.modal = 1;
-              this.tituloModal = "Add device";
-              this.tipoAccion = 1;
-
-              break;
-            }
-            case "actualizar": {
-              //console.log(data);
-              this.modal = 1;
-              this.tituloModal = "Update device";
-              this.tipoAccion = 2;
-
-              break;
-            }
-          }
+      const axiosHeader = {
+        headers: {
+          token: this.$store.state.auth.token
+        },
+        params: {
+          dId: device.dId
         }
-      }
+      };
+      this.$axios
+        .delete("/device", axiosHeader)
+        .then(res => {
+          if (res.data.status == "success") {
+            this.$notify({
+              type: "success",
+              icon: "tim-icons icon-check-2",
+              message: device.name + " deleted!"
+            });
+            this.$store.dispatch("getDevices");
+          }
+          
+        })
+        .catch(e => {
+          console.log(e);
+          this.$notify({
+            type: "danger",
+            icon: "tim-icons icon-alert-circle-exc",
+            message: " Error deleting " + device.name
+          });
+        });
     },
-    cerrarModal(){
-        this.modal=0;
-        this.tituloModal='';
-        this.nombre='';
-        this.descripcion='';
+    updateSaverRuleStatus(index) {
+      console.log(index);
+      this.devices[index].saverRule = !this.devices[index].saverRule;
     }
   }
 };
 </script>
-
-<style>
-.modal-content {
-  margin-top: 100px;
-  width: 100% !important;
-  position: absolute !important;
-}
-.mostrar {
-  display: list-item !important;
-  opacity: 1 !important;
-  position: absolute !important;
-  background-color: #3c29297a !important;
-}
-</style>

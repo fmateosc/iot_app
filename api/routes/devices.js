@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-
 const { checkAuth } = require("../middlewares/authentication.js");
 
 /*
@@ -56,6 +55,8 @@ router.post("/device", checkAuth, async (req, res) => {
     newDevice.createdTime = Date.now();
 
     const device = await Device.create(newDevice);
+
+    selectDevice(userId, newDevice.dId);
 
     const toSend = {
       status: "success"
@@ -144,6 +145,7 @@ async function selectDevice(userId, dId) {
     );
 
     return true;
+
   } catch (error) {
     console.log("ERROR IN 'selectDevice' FUNCTION ");
     console.log(error);

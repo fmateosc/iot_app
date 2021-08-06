@@ -2,6 +2,7 @@
   <div>
     <!-- FORM ADD DEVICE -->
     <div class="row">
+      <Json :value="$store.state.selectedDevice"></Json>
       <card>
         <div slot="header">
           <h4 class="card-title">Add new Device</h4>
@@ -96,16 +97,16 @@
                 <i
                   class="fas fa-database "
                   :class="{
-                    'text-success': row.saverRule,
-                    'text-dark': !row.saverRule
+                    'text-success': row.saverRule.status,
+                    'text-dark': !row.saverRule.status
                   }"
                 ></i>
               </el-tooltip>
 
               <el-tooltip content="Database Saver">
                 <base-switch
-                  @click="updateSaverRuleStatus($index)"
-                  :value="row.saverRule"
+                  @click="updateSaverRuleStatus(row.saverRule)"
+                  :value="row.saverRule.status"
                   type="primary"
                   on-text="On"
                   off-text="Off"
@@ -133,14 +134,15 @@
         </el-table>
       </card>
     </div>
-
-    <Json :value="templates"></Json>
+    <Json :value="$store.state.selectedDevice"></Json>
+    <Json :value="$store.state.devices"></Json>
   </div>
 </template>
 
 <script>
 import { Table, TableColumn } from "element-ui";
 import { Select, Option } from "element-ui";
+
 export default {
   middleware: "authenticated",
   components: {
@@ -162,10 +164,91 @@ export default {
     };
   },
   mounted() {
-    this.$store.dispatch("getDevices");
+    
     this.getTemplates();
   },
   methods: {
+    updateSaverRuleStatus(rule) {
+      
+      var ruleCopy = JSON.parse(JSON.stringify(rule));
+
+      ruleCopy.status = !ruleCopy.status;
+
+      const toSend = { 
+        rule: ruleCopy 
+      };
+
+      const axiosHeaders = {
+        headers: {
+          token: this.$store.state.auth.token
+        }
+      };
+
+      this.$axios
+        .put("/saver-rule", toSend, axiosHeaders)
+        .then(res => {
+
+
+          if (res.data.status == "success") {
+
+            this.$store.dispatch("getDevices");
+
+            this.$notify({
+              type: "success",
+              icon: "tim-icons icon-check-2",
+              message: " Device Saver Status Updated"
+            });
+
+          }
+
+          return;
+        })
+        .catch(e => {
+          console.log(e);
+          this.$notify({
+            type: "danger",
+            icon: "tim-icons icon-alert-circle-exc",
+            message: " Error updating saver rule status"
+          });
+          return;
+        });
+    },
+
+    deleteDevice(device) {
+      const axiosHeaders = {
+        headers: {
+          token: this.$store.state.auth.accessToken
+        },
+        params: {
+          dId: device.dId
+        }
+      };
+
+      this.$axios
+        .delete("/device", axiosHeaders)
+        .then(res => {
+          if (res.data.status == "success") {
+            this.$notify({
+              type: "success",
+              icon: "tim-icons icon-check-2",
+              message: device.name + " deleted!"
+            });
+          }
+
+          $nuxt.$emit("time-to-get-devices");
+
+          return;
+        })
+        .catch(e => {
+          console.log(e);
+          this.$notify({
+            type: "danger",
+            icon: "tim-icons icon-alert-circle-exc",
+            message: " Error deleting " + device.name
+          });
+          return;
+        });
+    },
     //new device
     createNewDevice() {
       if (this.newDevice.name == "") {
@@ -176,6 +259,7 @@ export default {
         });
         return;
       }
+
       if (this.newDevice.dId == "") {
         this.$notify({
           type: "warning",
@@ -184,6 +268,7 @@ export default {
         });
         return;
       }
+
       if (this.selectedIndexTemplate == null) {
         this.$notify({
           type: "warning",
@@ -192,11 +277,13 @@ export default {
         });
         return;
       }
+
       const axiosHeaders = {
         headers: {
           token: this.$store.state.auth.token
         }
       };
+
       //ESCRIBIMOS EL NOMBRE Y EL ID DEL TEMPLATE SELECCIONADO EN EL OBJETO newDevice
       this.newDevice.templateId = this.templates[
         this.selectedIndexTemplate
@@ -204,22 +291,27 @@ export default {
       this.newDevice.templateName = this.templates[
         this.selectedIndexTemplate
       ].name;
+
       const toSend = {
         newDevice: this.newDevice
       };
+
       this.$axios
         .post("/device", toSend, axiosHeaders)
         .then(res => {
           if (res.data.status == "success") {
             this.$store.dispatch("getDevices");
+
             this.newDevice.name = "";
             this.newDevice.dId = "";
             this.selectedIndexTemplate = null;
+
             this.$notify({
               type: "success",
               icon: "tim-icons icon-check-2",
               message: "Success! Device was added"
             });
+
             return;
           }
         })
@@ -241,6 +333,7 @@ export default {
           }
         });
     },
+
     //Get Templates
     async getTemplates() {
       const axiosHeaders = {
@@ -248,9 +341,11 @@ export default {
           token: this.$store.state.auth.token
         }
       };
+
       try {
         const res = await this.$axios.get("/template", axiosHeaders);
         console.log(res.data);
+
         if (res.data.status == "success") {
           this.templates = res.data.data;
         }
@@ -264,6 +359,7 @@ export default {
         return;
       }
     },
+
     deleteDevice(device) {
       const axiosHeader = {
         headers: {
@@ -273,6 +369,7 @@ export default {
           dId: device.dId
         }
       };
+
       this.$axios
         .delete("/device", axiosHeader)
         .then(res => {
@@ -294,10 +391,7 @@ export default {
           });
         });
     },
-    updateSaverRuleStatus(index) {
-      console.log(index);
-      this.devices[index].saverRule = !this.devices[index].saverRule;
-    }
+
   }
 };
 </script>

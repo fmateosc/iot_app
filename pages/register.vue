@@ -77,6 +77,7 @@ export default {
   },
   methods: {
     register() {
+
       this.$axios
         .post("/register", this.user)
         .then(res => {
@@ -87,30 +88,43 @@ export default {
               icon: "tim-icons icon-check-2",
               message: "Success! Now you can login..."
             });
+
             this.user.name = "";
             this.user.password = "";
             this.user.email = "";
+
             return;
           }
+
         })
         .catch(e => {
           console.log(e.response.data);
+
           if (e.response.data.error.errors.email.kind == "unique") {
             this.$notify({
               type: "danger",
               icon: "tim-icons icon-alert-circle-exc",
               message: "User already exists :("
             });
+
             return;
+
           } else {
+
             this.$notify({
               type: "danger",
               icon: "tim-icons icon-alert-circle-exc",
               message: "Error creating user..."
             });
+
             return;
           }
+
+
+
         });
+
+
     }
   }
 };

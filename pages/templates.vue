@@ -4,7 +4,7 @@
     <div class="row">
       <card>
         <div slot="header">
-          <h4 class="card-title">Widgets</h4>
+          <h4 class="card-title">Widgets {{iotIndicatorConfig.column}}</h4>
         </div>
 
         <div class="row">
@@ -688,13 +688,14 @@
     </div>
 
     <!-- JSONS -->
-    <Json :value="templates"></Json>
+    <Json :value="widgets"></Json>
   </div>
 </template>
 
 <script>
 import { Table, TableColumn } from "element-ui";
 import { Select, Option } from "element-ui";
+
 export default {
   middleware: "authenticated",
   components: {
@@ -710,6 +711,7 @@ export default {
       widgetType: "",
       templateName: "",
       templateDescription: "",
+
       ncConfig: {
         userId: "sampleuserid",
         selectedDevice: {
@@ -727,6 +729,7 @@ export default {
         chartTimeAgo: 1566,
         demo: true
       },
+
       iotSwitchConfig: {
         userId: "userid",
         selectedDevice: {
@@ -740,6 +743,7 @@ export default {
         icon: "fa-bath",
         column: "col-6"
       },
+
       configButton: {
         userId: "userid",
         selectedDevice: {
@@ -754,6 +758,7 @@ export default {
         icon: "fa-bath",
         column: "col-6"
       },
+
       iotIndicatorConfig: {
         userId: "userid",
         selectedDevice: {
@@ -767,6 +772,7 @@ export default {
         icon: "fa-bath",
         column: "col-6"
       },
+
       configButton: {
         userId: "userid",
         selectedDevice: {
@@ -784,6 +790,7 @@ export default {
         class: "danger",
         message: "{'fanstatus': 'stop'}"
       },
+
       configIndicator: {
         userId: "userid",
         selectedDevice: {
@@ -802,9 +809,11 @@ export default {
       }
     };
   },
+
   mounted() {
     this.getTemplates();
   },
+
   methods: {
     //Get Templates
     async getTemplates() {
@@ -813,9 +822,11 @@ export default {
           token: this.$store.state.auth.token
         }
       };
+
       try {
         const res = await this.$axios.get("/template", axiosHeaders);
         console.log(res.data);
+
         if (res.data.status == "success") {
           this.templates = res.data.data;
         }
@@ -829,6 +840,7 @@ export default {
         return;
       }
     },
+
     //Save Template
     async saveTemplate() {
       const axiosHeaders = {
@@ -836,7 +848,9 @@ export default {
           token: this.$store.state.auth.token
         }
       };
+
       console.log(axiosHeaders);
+
       const toSend = {
         template: {
           name: this.templateName,
@@ -844,8 +858,10 @@ export default {
           widgets: this.widgets
         }
       };
+
       try {
         const res = await this.$axios.post("/template", toSend, axiosHeaders);
+
         if (res.data.status == "success") {
           this.$notify({
             type: "success",
@@ -864,8 +880,10 @@ export default {
         return;
       }
     },
+
     //Delete Template
     async deleteTemplate(template) {
+
       
       const axiosHeaders = {
         headers: {
@@ -875,9 +893,13 @@ export default {
           templateId:template._id
         }
       };
+
       console.log(axiosHeaders);
+
       try {
+
         const res = await this.$axios.delete("/template", axiosHeaders);
+
         if (res.data.status == "success") {
           this.$notify({
             type: "success",
@@ -897,29 +919,35 @@ export default {
         return;
       }
     },
+
     //Add Widget
     addNewWidget() {
       if (this.widgetType == "numberchart") {
         this.ncConfig.variable = this.makeid(10);
         this.widgets.push(JSON.parse(JSON.stringify(this.ncConfig)));
       }
+
       if (this.widgetType == "switch") {
         this.iotSwitchConfig.variable = this.makeid(10);
         this.widgets.push(JSON.parse(JSON.stringify(this.iotSwitchConfig)));
       }
+
       if (this.widgetType == "button") {
         this.configButton.variable = this.makeid(10);
         this.widgets.push(JSON.parse(JSON.stringify(this.configButton)));
       }
+
       if (this.widgetType == "indicator") {
-        this.configIndicator.variable = this.makeid(10);
-        this.widgets.push(JSON.parse(JSON.stringify(this.configIndicator)));
+        this.iotIndicatorConfig.variable = this.makeid(10);
+        this.widgets.push(JSON.parse(JSON.stringify(this.iotIndicatorConfig)));
       }
     },
+
     //Delete Widget
     deleteWidget(index) {
       this.widgets.splice(index, 1);
     },
+
     makeid(length) {
       var result = "";
       var characters =

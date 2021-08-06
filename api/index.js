@@ -22,6 +22,9 @@ app.use(cors());
 app.use("/api", require("./routes/devices.js"));
 app.use("/api", require("./routes/users.js"));
 app.use("/api", require("./routes/templates.js"));
+app.use("/api", require("./routes/webhooks.js"));
+app.use("/api", require("./routes/emqxapi.js"));
+app.use("/api", require("./routes/alarms.js"));
 
 module.exports = app;
 
@@ -29,6 +32,8 @@ module.exports = app;
 app.listen(3001, () => {
   console.log("API server listening on port 3001");
 });
+
+
 
 //Mongo Connection
 const mongoUserName = "devuser";

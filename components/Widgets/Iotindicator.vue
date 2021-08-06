@@ -5,6 +5,7 @@
         {{ config.selectedDevice.name }} - {{ config.variableFullName }}
       </h4>
     </div>
+
     <i
       class="fa "
       :class="[config.icon, getIconColorClass()]"
@@ -12,12 +13,14 @@
     ></i>
   </card>
 </template>
+
 <script>
 export default {
   props: ['config'],
   data() {
     return {
       value: false
+
     };
   },
   mounted(){
@@ -30,6 +33,7 @@ export default {
     this.$nuxt.$off(this.config.userId + "/" + this.config.selectedDevice.dId + "/" + this.config.variable + "/sdata")
   },
   methods: {
+
     processReceivedData(data){
         console.log("received");
         console.log(data);
@@ -40,6 +44,7 @@ export default {
       if (!this.value) {
         return "text-dark";
       }
+
       if (this.config.class == "success") {
         return "text-success";
       }
@@ -53,6 +58,9 @@ export default {
         return "text-danger";
       }
     }
+
   }
 };
+
+
 </script>
